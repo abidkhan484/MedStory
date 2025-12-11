@@ -34,6 +34,9 @@ RUN flutter pub get
 # Copy the rest of the application code
 COPY . .
 
+# Create web platform configuration
+RUN flutter create . --platforms web
+
 # Build the web application
 RUN flutter build web --release
 
