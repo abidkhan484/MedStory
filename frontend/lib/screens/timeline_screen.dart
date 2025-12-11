@@ -43,7 +43,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
             itemBuilder: (context, index) {
               final item = provider.items[index];
               return TimelineItemWidget(
-                item: item,
+                item: item, 
                 baseUrl: provider.apiClient.baseUrl
               );
             },
@@ -89,7 +89,7 @@ class TimelineItemWidget extends StatelessWidget {
             if (item.imageUrl != null)
               Image.network(
                 _getImageUrl(item.imageUrl!),
-                errorBuilder: (context, error, stackTrace) =>
+                errorBuilder: (context, error, stackTrace) => 
                     const Text('Could not load image'),
               ),
           ],

@@ -1,0 +1,22 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/medstory.db
+      - STORAGE_TYPE=local
+      - MEDIA_DIR=/app/media
+    volumes:
+      - ./data:/app/data
+      - ./media:/app/media
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend

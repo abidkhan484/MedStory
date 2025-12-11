@@ -55,7 +55,7 @@ class TimelineProvider extends ChangeNotifier {
 
     try {
       final data = await apiClient.postMultipart(
-        '/api/timeline/',
+        '/api/timeline/', 
         {'type': 'image', 'text': text},
         fileBytes,
         filename

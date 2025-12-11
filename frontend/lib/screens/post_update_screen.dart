@@ -1,5 +1,5 @@
 
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,16 +16,19 @@ class PostUpdateScreen extends StatefulWidget {
 class _PostUpdateScreenState extends State<PostUpdateScreen> {
   final _textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-
+  
   bool _isUploading = false;
   XFile? _selectedImage;
+  Uint8List? _selectedImageBytes;
 
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
+        final bytes = await image.readAsBytes();
         setState(() {
           _selectedImage = image;
+          _selectedImageBytes = bytes;
         });
       }
     } catch (e) {
@@ -51,12 +54,11 @@ class _PostUpdateScreenState extends State<PostUpdateScreen> {
 
     try {
       final provider = context.read<TimelineProvider>();
-
-      if (_selectedImage != null) {
-         final bytes = await _selectedImage!.readAsBytes();
+      
+      if (_selectedImage != null && _selectedImageBytes != null) {
          await provider.addImage(
-           _textController.text,
-           bytes,
+           _textController.text, 
+           _selectedImageBytes!, 
            _selectedImage!.name
          );
       } else {
@@ -100,8 +102,8 @@ class _PostUpdateScreenState extends State<PostUpdateScreen> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-
-            if (_selectedImage != null) ...[
+            
+            if (_selectedImageBytes != null) ...[
               Stack(
                 alignment: Alignment.topRight,
                 children: [
@@ -112,35 +114,38 @@ class _PostUpdateScreenState extends State<PostUpdateScreen> {
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: kIsWeb
-                        ? Image.network(_selectedImage!.path, fit: BoxFit.cover)
-                        : Image.file(File(_selectedImage!.path), fit: BoxFit.cover),
+                    // Use Image.memory for cross-platform compatibility without dart:io
+                    child: Image.memory(
+                      _selectedImageBytes!, 
+                      fit: BoxFit.cover
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, color: Colors.red),
                     onPressed: () {
                       setState(() {
                         _selectedImage = null;
+                        _selectedImageBytes = null;
                       });
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-            ] else
+            ] else 
               OutlinedButton.icon(
                 onPressed: _pickImage,
                 icon: const Icon(Icons.image),
                 label: const Text('Add Image'),
               ),
-
+            
             const Spacer(),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: _isUploading ? null : _submit,
-                child: _isUploading
-                  ? const CircularProgressIndicator()
+                child: _isUploading 
+                  ? const CircularProgressIndicator() 
                   : const Text('Post'),
               ),
             ),

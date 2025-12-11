@@ -31,10 +31,10 @@ class ApiClient {
     }
   }
 
-  Future<dynamic> postMultipart(String endpoint, Map<String, String> fields,
+  Future<dynamic> postMultipart(String endpoint, Map<String, String> fields, 
       List<int> fileBytes, String filename) async {
     var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'));
-
+    
     fields.forEach((k, v) {
       request.fields[k] = v;
     });
