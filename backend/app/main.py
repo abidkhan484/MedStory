@@ -1,0 +1,34 @@
+
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from .database import create_db_and_tables
+from .config import settings, StorageType
+from .routes import timeline
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
+# Add CORS Middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, this should be specific domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Mount media directory for local storage
+if settings.STORAGE_TYPE == StorageType.LOCAL:
+    app.mount("/media", StaticFiles(directory=settings.MEDIA_DIR), name="media")
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to MedStory API"}
+
+app.include_router(timeline.router, prefix="/api/timeline", tags=["timeline"])
