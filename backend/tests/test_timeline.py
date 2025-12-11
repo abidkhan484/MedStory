@@ -14,8 +14,8 @@ import shutil
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
+        "sqlite://", 
+        connect_args={"check_same_thread": False}, 
         poolclass=StaticPool
     )
     SQLModel.metadata.create_all(engine)
@@ -53,29 +53,29 @@ def test_create_image_upload(client: TestClient, tmp_path):
     settings.MEDIA_DIR = tmp_path / "media"
     settings.MEDIA_DIR.mkdir()
     settings.STORAGE_TYPE = StorageType.LOCAL
-
+    
     # We need to override the storage dependency because the app creates it at startup/request time
     # but we want it to point to our temp dir.
-    # However, since LocalStorageService takes media_dir in constructor,
-    # and get_storage_service uses global settings, modifying settings might work
+    # However, since LocalStorageService takes media_dir in constructor, 
+    # and get_storage_service uses global settings, modifying settings might work 
     # if get_storage_service is called per request. It is.
-
+    
     # Create a dummy image file
     file_content = b"fake image content"
     files = {"file": ("test.jpg", file_content, "image/jpeg")}
-
+    
     response = client.post(
         "/api/timeline/",
         data={"type": "image", "text": "My prescription"},
         files=files
     )
-
+    
     assert response.status_code == 200
     data = response.json()
     assert data["type"] == "image"
     assert data["text"] == "My prescription"
     assert data["image_url"] is not None
-
+    
     # Verify file exists
     filename = data["image_url"].split("/")[-1]
     assert (settings.MEDIA_DIR / filename).exists()
