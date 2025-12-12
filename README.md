@@ -35,3 +35,13 @@ The Docker setup maps local directories for persistence:
 If you prefer to run services individually without Docker, please refer to the README files in each directory:
 - [Backend README](backend/README.md)
 - [Frontend README](frontend/README.md)
+
+## AI Coding Assistant Support
+
+This project includes comprehensive guidelines for AI coding assistants (GitHub Copilot, Jules, Antigravity, Cursor, etc.):
+
+- **[AI Assistant Setup Guide](AI_ASSISTANT_SETUP.md)** - How to use AI tools with this project
+- **[Copilot Instructions](.github/copilot-instructions.md)** - Detailed coding guidelines and patterns
+- **[Agent Guidelines](AGENTS.md)** - Repository-wide development guidelines
+
+These files help AI assistants understand the project structure, coding patterns, and security requirements for medical data handling.
