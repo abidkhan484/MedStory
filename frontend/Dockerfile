@@ -38,7 +38,8 @@ COPY . .
 RUN flutter create . --platforms web
 
 # Build the web application
-RUN flutter build web --release
+ARG API_URL
+RUN flutter build web --release --dart-define=API_URL=$API_URL
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine

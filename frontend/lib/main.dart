@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // In a real app, baseUrl would come from env config
-    final apiClient = ApiClient(baseUrl: 'http://localhost:8000');
+    const apiUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:8000');
+    final apiClient = ApiClient(baseUrl: apiUrl);
 
     return MultiProvider(
       providers: [
