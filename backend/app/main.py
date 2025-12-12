@@ -17,7 +17,7 @@ app = FastAPI(lifespan=lifespan)
 # Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=settings.get_cors_origins(), 
     allow_credentials=False, # Changed to False to allow wildcard origins
     allow_methods=["*"],
     allow_headers=["*"],
