@@ -7,9 +7,9 @@ class StorageType(str, Enum):
     LOCAL = "local"
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "sqlite:///./data/medstory.db"
+    DATABASE_URL: str = "sqlite:///./medstory.db"
     STORAGE_TYPE: StorageType = StorageType.LOCAL
-    MEDIA_DIR: Path = Path("/app/media")
+    MEDIA_DIR: Path = Path("media")
     CORS_ORIGINS: str = "*"
 
     model_config = SettingsConfigDict(env_file=".env")
