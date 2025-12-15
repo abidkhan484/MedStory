@@ -6,9 +6,6 @@ from sqlmodel.pool import StaticPool
 from backend.app.main import app
 from backend.app.database import get_session
 from backend.app.config import settings, StorageType
-from backend.app.storage import get_storage_service, LocalStorageService
-import os
-import shutil
 
 # Use in-memory SQLite for tests
 @pytest.fixture(name="session")

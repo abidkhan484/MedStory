@@ -1,6 +1,6 @@
 
 from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from typing import List, Optional
 from ..database import get_session
 from ..models import TimelineItem, ItemType, TimelineItemResponse
@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[TimelineItemResponse])
 def read_timeline(skip: int = 0, limit: int = 100, session: Session = Depends(get_session)):
-    items = session.exec(select(TimelineItem).order_by(TimelineItem.created_at.desc()).offset(skip).limit(limit)).all()
+    items = session.exec(select(TimelineItem).order_by(col(TimelineItem.created_at).desc()).offset(skip).limit(limit)).all()
     return items
 
 @router.post("/", response_model=TimelineItemResponse)

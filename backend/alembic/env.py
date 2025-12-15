@@ -12,8 +12,8 @@ from alembic import context
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 # Import models so SQLModel.metadata is populated
-from app import models  # noqa: F401
-from app.config import settings
+from app import models  # noqa: F401, E402
+from app.config import settings  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
