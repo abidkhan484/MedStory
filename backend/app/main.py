@@ -3,13 +3,12 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from .database import create_db_and_tables
 from .config import settings, StorageType
 from .routes import timeline
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    create_db_and_tables()
+    # Database tables are now managed by Alembic migrations
     yield
 
 app = FastAPI(lifespan=lifespan)
