@@ -8,3 +8,6 @@ httpx
 python-dotenv
 pytest
 alembic
+pre-commit
+ruff
+mypy

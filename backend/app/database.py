@@ -1,5 +1,5 @@
 
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import create_engine, Session
 from .config import settings
 
 # If using sqlite, check_same_thread=False is needed for FastAPI
