@@ -13,6 +13,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[TimelineItemResponse])
 def read_timeline(skip: int = 0, limit: int = 100, session: Session = Depends(get_session)):
+    # Using col() is required to fix mypy error: "datetime" has no attribute "desc"
     items = session.exec(select(TimelineItem).order_by(col(TimelineItem.created_at).desc()).offset(skip).limit(limit)).all()
     return items
 
