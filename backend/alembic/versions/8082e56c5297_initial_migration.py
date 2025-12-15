@@ -9,7 +9,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
 
 
 # revision identifiers, used by Alembic.
@@ -25,8 +24,8 @@ def upgrade() -> None:
     op.create_table('timelineitem',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('type', sa.Enum('STATUS', 'IMAGE', 'REPORT', name='itemtype'), nullable=False),
-    sa.Column('text', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
-    sa.Column('image_url', sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+    sa.Column('text', sa.String(), nullable=True),
+    sa.Column('image_url', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
