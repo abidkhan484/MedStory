@@ -2,16 +2,10 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
 from .config import settings, StorageType
 from .routes import timeline
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Database tables are now managed by Alembic migrations
-    yield
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 # Add CORS Middleware
 app.add_middleware(
