@@ -35,6 +35,20 @@ The application uses environment variables for configuration. You can create a `
 | `STORAGE_TYPE` | Storage strategy (`local` or `s3`) | `local` |
 | `MEDIA_DIR` | Directory for local file storage | `media` |
 
+## Database Migrations
+
+This project uses [Alembic](https://alembic.sqlalchemy.org/) for database migrations.
+
+To apply migrations:
+```bash
+alembic upgrade head
+```
+
+To create a new migration after changing models:
+```bash
+alembic revision --autogenerate -m "Description of changes"
+```
+
 ## Running the Server
 
 Start the development server:

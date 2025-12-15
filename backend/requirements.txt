@@ -7,3 +7,4 @@ aiofiles
 httpx
 python-dotenv
 pytest
+alembic

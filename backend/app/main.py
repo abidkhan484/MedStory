@@ -2,17 +2,10 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from .database import create_db_and_tables
 from .config import settings, StorageType
 from .routes import timeline
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_db_and_tables()
-    yield
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 # Add CORS Middleware
 app.add_middleware(
