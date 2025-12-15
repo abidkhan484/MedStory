@@ -1,56 +1,68 @@
+# =========================
+# Stage 1: Build Flutter Web
+# =========================
+FROM debian:bookworm-slim AS build-env
 
-# Stage 1: Build the Flutter Web App
-FROM debian:latest AS build-env
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TAR_OPTIONS="--no-same-owner"
 
-# Install dependencies for Flutter
+# Install minimal dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     git \
     unzip \
+    xz-utils \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone Flutter SDK
-RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
+# Create non-root user
+RUN useradd -m -s /bin/bash flutter && \
+    mkdir -p /usr/local/flutter && \
+    chown -R flutter:flutter /usr/local/flutter
 
-# Set Flutter path
+# Switch to non-root user
+USER flutter
+
+# Install Flutter
+ARG FLUTTER_VERSION=3.38.5
+RUN git clone https://github.com/flutter/flutter.git \
+    --branch ${FLUTTER_VERSION} \
+    --depth 1 \
+    /usr/local/flutter
+
+# Set PATH
 ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
 
-# Enable web support (it's enabled by default in stable, but good to be explicit/safe)
-RUN flutter config --enable-web
+# Pre-download Flutter web SDK
+RUN flutter precache --web
 
-# Run flutter doctor to download artifacts
-RUN flutter doctor -v
-
-# Set working directory
 WORKDIR /app
 
-# Copy pubspec files first for better caching
-# Only copying pubspec.yaml as lock file might not exist yet in fresh checkout
-COPY pubspec.yaml ./
+# Copy pubspec files
+COPY --chown=flutter:flutter pubspec.yaml pubspec.lock* ./
 
 # Get dependencies
 RUN flutter pub get
 
-# Copy the rest of the application code
-COPY . .
+# Copy rest of the app
+COPY --chown=flutter:flutter . .
 
-# Create web platform configuration
-RUN flutter create . --platforms web
-
-# Build the web application
+# Enable web platform and build
 ARG API_URL
-RUN flutter build web --release --dart-define=API_URL=$API_URL
+RUN flutter create . --platforms web && \
+    flutter build web --release --dart-define=API_URL=${API_URL}
 
-# Stage 2: Serve with Nginx
+# =========================
+# Stage 2: Nginx
+# =========================
 FROM nginx:alpine
 
-# Copy build artifacts from previous stage
+# Copy built web files
 COPY --from=build-env /app/build/web /usr/share/nginx/html
 
-# Copy custom Nginx configuration
+# Copy nginx config (create one if you don't have it)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
