@@ -1,7 +1,0 @@
-name: "MedStory CodeQL Config"
-
-paths-ignore:
-  - 'frontend/**'
-
-queries:
-  - uses: security-and-quality
