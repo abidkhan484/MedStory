@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 venv/
 .env
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 
 # Flutter/Dart
 .dart_tool/
