@@ -10,11 +10,12 @@ class GeminiApiClient(BaseHttpClient):
     """
     Client for interacting with Google's Gemini API.
     """
-    def __init__(self, api_key: str, base_url: str = "https://generativelanguage.googleapis.com/v1beta", timeout: int = 30):
+    def __init__(self, api_key: str, model: str = "gemini-pro", base_url: str = "https://generativelanguage.googleapis.com/v1beta", timeout: int = 30):
         super().__init__(base_url, timeout)
         self.api_key = api_key
+        self.model = model
         # Default endpoint for text generation
-        self.api_endpoint = "/models/gemini-pro:generateContent"
+        self.api_endpoint = f"/models/{model}:generateContent"
         self.http_method = "POST"
 
     def build_headers(self) -> Dict[str, str]:
@@ -26,21 +27,8 @@ class GeminiApiClient(BaseHttpClient):
     def build_payload(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Construct the payload for Gemini API.
-        Expected input data: {"text": "prompt"} or raw payload.
+        The caller is responsible for providing the correct structure.
         """
-        # Simple wrapper for now, assuming input might need formatting
-        # If data has 'contents', assume it's already formatted
-        if "contents" in data:
-            return data
-
-        # If simple text, format it
-        if "text" in data:
-            return {
-                "contents": [{
-                    "parts": [{"text": data["text"]}]
-                }]
-            }
-
         return data
 
     def parse_response(self, data: Dict[str, Any]) -> Dict[str, Any]:
