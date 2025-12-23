@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     MEDIA_DIR: Path = Path("media")
     CORS_ORIGINS: str = "*"
 
+    # External APIs
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-pro"
+
     model_config = SettingsConfigDict(env_file=".env")
 
     def get_cors_origins(self) -> list[str]:
