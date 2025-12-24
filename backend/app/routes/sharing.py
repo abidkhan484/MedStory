@@ -37,6 +37,9 @@ async def create_access_link(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    Create a new shareable access link for the current user's timeline.
+    """
     # Only owner can create links for now (or relatives with permission in future)
     # Generate secure token
     token = secrets.token_urlsafe(32)
@@ -78,6 +81,9 @@ async def list_my_links(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    List all active access links created by the current user.
+    """
     links = session.exec(
         select(AccessLink)
         .where(AccessLink.owner_id == current_user.id)
@@ -91,6 +97,9 @@ async def revoke_link(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    Revoke a specific access link.
+    """
     link = session.get(AccessLink, link_id)
     if not link:
         raise HTTPException(status_code=404, detail="Link not found")
@@ -116,6 +125,10 @@ async def access_timeline_via_link(
     token: str,
     session: Session = Depends(get_session)
 ):
+    """
+    Access timeline via a shared link token.
+    Increments use count for one-time links.
+    """
     # This endpoint checks the token and returns basic info or data
     # For MVP, we'll return validity status.
     # Frontend will use this to determine if it should show the timeline or ask for login.

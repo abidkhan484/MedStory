@@ -73,6 +73,9 @@ async def register(
     user_in: UserCreate,
     session: Session = Depends(get_session)
 ):
+    """
+    Register a new user and send an email verification OTP.
+    """
     # Check if user exists
     user = session.exec(select(User).where(User.email == user_in.email)).first()
     if user:
@@ -107,10 +110,11 @@ async def register(
     await send_otp_email(user.email, otp)
 
     # Audit Log
+    client_host = request.client.host if request.client else "unknown"
     audit = AuditLog(
         user_id=user.id,
         action=AuditAction.REGISTER,
-        ip_address="0.0.0.0" # Should come from request
+        ip_address=client_host
     )
     session.add(audit)
     session.commit()
@@ -124,6 +128,9 @@ async def verify_email(
     verify_in: OTPVerify,
     session: Session = Depends(get_session)
 ):
+    """
+    Verify user's email address using the OTP code.
+    """
     user = session.exec(select(User).where(User.email == verify_in.email)).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -166,6 +173,9 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: Session = Depends(get_session)
 ):
+    """
+    Authenticate user and return Access/Refresh tokens.
+    """
     user = session.exec(select(User).where(User.email == form_data.username)).first()
     if not user or not verify_password(form_data.password, user.password_hash):
         raise HTTPException(
@@ -207,6 +217,9 @@ async def refresh_token(
     refresh_in: RefreshRequest,
     session: Session = Depends(get_session)
 ):
+    """
+    Refresh access token using a valid refresh token.
+    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -266,6 +279,9 @@ async def logout(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    Log out the current user (Revoke session/refresh token).
+    """
     # In a JWT stateless system, we can't strictly "invalidate" the access token without a blacklist.
     # But we can revoke the refresh token if provided, or log the logout action.
     # A robust implementation would require sending the refresh token to be revoked.
@@ -280,6 +296,9 @@ async def forgot_password(
     request: ForgotPasswordRequest,
     session: Session = Depends(get_session)
 ):
+    """
+    Initiate password reset flow by sending an OTP to the email.
+    """
     user = session.exec(select(User).where(User.email == request.email)).first()
     if not user:
         # Don't reveal user existence
@@ -306,6 +325,9 @@ async def reset_password(
     request: ResetPasswordRequest,
     session: Session = Depends(get_session)
 ):
+    """
+    Reset password using the OTP received via email.
+    """
     user = session.exec(select(User).where(User.email == request.email)).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -342,12 +364,18 @@ async def reset_password(
 
 @router.get("/oauth/google")
 async def google_login():
+    """
+    Return the Google OAuth login URL.
+    """
     return {
         "url": f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={settings.GOOGLE_CLIENT_ID}&redirect_uri=http://localhost:8000/api/auth/oauth/google/callback&scope=openid%20email%20profile"
     }
 
 @router.get("/oauth/google/callback")
 async def google_callback(code: str, session: Session = Depends(get_session)):
+    """
+    Handle Google OAuth callback. (MVP Stub)
+    """
     # MVP Stub: We would exchange code for token here.
     # Since we can't really test this without a real Google App, we'll return a stub error or mock.
     if settings.GOOGLE_CLIENT_ID is None:

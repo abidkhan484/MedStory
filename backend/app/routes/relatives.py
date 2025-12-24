@@ -30,6 +30,9 @@ async def invite_relative(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    Invite a registered user to become a relative (connection).
+    """
     # Check if user exists
     relative_user = session.exec(select(User).where(User.email == invite_in.email)).first()
     if not relative_user:
@@ -72,6 +75,9 @@ async def list_relatives(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    List all relative connections for the current user.
+    """
     connections = session.exec(
         select(RelativeConnection)
         .where(RelativeConnection.user_id == current_user.id)
@@ -84,6 +90,9 @@ async def accept_connection(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session)
 ):
+    """
+    Accept an incoming relative invitation.
+    """
     # Note: Logic here is tricky.
     # Usually the Recipient (Relative) accepts the invitation from the Sender (User).
     # But my model `RelativeConnection` is directional `user_id` -> `relative_id`.
