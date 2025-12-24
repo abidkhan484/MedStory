@@ -21,8 +21,6 @@ class AuditAction(str, Enum):
     LOGOUT = "logout"
     PASSWORD_CHANGED = "password_changed"
     PASSWORD_RESET = "password_reset"
-    MFA_ENABLED = "mfa_enabled"
-    MFA_DISABLED = "mfa_disabled"
     ACCESS_LINK_CREATED = "access_link_created"
     ACCESS_LINK_REVOKED = "access_link_revoked"
     TIMELINE_ACCESSED = "timeline_accessed"
@@ -42,10 +40,6 @@ class User(SQLModel, table=True):
     # Verification & Status
     is_verified: bool = Field(default=False)
     is_active: bool = Field(default=True)
-
-    # MFA
-    mfa_enabled: bool = Field(default=False)
-    mfa_secret: Optional[str] = None
 
     # OAuth
     oauth_provider: Optional[str] = None  # 'google'
