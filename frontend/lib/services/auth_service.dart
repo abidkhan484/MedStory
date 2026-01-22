@@ -2,11 +2,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 
 class AuthService {
-  // Use 10.0.2.2 for Android emulator to access localhost
-  static const String baseUrl = 'http://localhost:8000/api/auth';
+  // Use String.fromEnvironment to allow overriding at build time
+  // Fallback to localhost:8000 for web/iOS/desktop
+  // For Android emulator, typically needs 10.0.2.2, but explicit config is better.
+  static const String _apiBase = String.fromEnvironment(
+    'API_URL',
+    defaultValue: 'http://localhost:8000'
+  );
+
+  String get baseUrl => '$_apiBase/api/auth';
+
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<User> register(String email, String password, String fullName) async {
