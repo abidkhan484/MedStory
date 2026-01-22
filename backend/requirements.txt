@@ -11,3 +11,8 @@ alembic
 pre-commit
 ruff
 mypy
+python-jose[cryptography]
+passlib[bcrypt]
+httpx
+slowapi
+aiosmtplib
